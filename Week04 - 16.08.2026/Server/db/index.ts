@@ -1,30 +1,18 @@
-import {MongoClient } from "mongodb"
+import { Collection, Db, MongoClient } from "mongodb";
+import { UserDocument } from "../type/user";
 
-
-
-const uri = "mongodb+srv://baraks_db_user:236TocitlNNQxEuT@cluster0.jajq2gv.mongodb.net/";
+const uri = process.env.MONGODB_URI ?? "mongodb+srv://baraks_db_user:236TocitlNNQxEuT@cluster0.jajq2gv.mongodb.net/";
 
 const client = new MongoClient(uri);
+const db: Db = client.db("users_project");
 
-async function run() {
-  try {
+export const usersCollection: Collection<UserDocument> = db.collection<UserDocument>("users");
+
+export async function connectDB(): Promise<void> {
     await client.connect();
-    const db = client.db('sample_mflix');
-    const collection = db.collection('movies');
-
-    // Find the first document in the collection
-    const first = await collection.findOne();
-    console.log(first);
-  } finally {
-    // Close the database connection when finished or an error occurs
-    await client.close();
-  }
+    console.log("Connected to MongoDB");
 }
-run().catch(console.error);
 
-
-
-
-
-
-
+export async function closeDB(): Promise<void> {
+    await client.close();
+}
